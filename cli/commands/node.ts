@@ -8,14 +8,28 @@ export type NodeInspectArgs = {
   readonly json: boolean;
 };
 
+export type NodeListArgs = {
+  readonly json: boolean;
+};
+
 /**
  * Prints all registered node types in sorted columns.
+ * With --json, prints `{ count, nodeTypes }` instead, for callers that parse the list.
  */
-export function nodeListCommand(): void {
+export function nodeListCommand(args: NodeListArgs = { json: false }): void {
   const types = Object.keys(defaultDef.registry).sort();
+
+  if (args.json) {
+    console.log(
+      JSON.stringify({ count: types.length, nodeTypes: types }, null, 2),
+    );
+    return;
+  }
+
   console.log(`Registered Nodes (${types.length})\n`);
 
-  const COL_WIDTH = 28;
+  // Wide enough for the longest name plus a gap, so no two names ever run together.
+  const COL_WIDTH = Math.max(28, ...types.map((t) => t.length + 2));
   const COLS = 4;
   for (let i = 0; i < types.length; i += COLS) {
     const row = types.slice(i, i + COLS);

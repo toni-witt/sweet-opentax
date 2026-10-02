@@ -45,6 +45,18 @@ Deno.test("nodeListCommand: output is sorted alphabetically", () => {
   assertEquals(firstPos < lastPos, true);
 });
 
+Deno.test("nodeListCommand: every name is its own word, however long", () => {
+  const out = captureLog(() => nodeListCommand());
+  const words = out.split("\n").slice(1).join(" ").split(/\s+/).filter(Boolean);
+  assertEquals(words.sort(), Object.keys(registry).sort());
+});
+
+Deno.test("nodeListCommand: --json lists every node type, sorted", () => {
+  const out = captureLog(() => nodeListCommand({ json: true }));
+  const types = Object.keys(registry).sort();
+  assertEquals(JSON.parse(out), { count: types.length, nodeTypes: types });
+});
+
 // ---------------------------------------------------------------------------
 // nodeInspectCommand — unknown node
 // ---------------------------------------------------------------------------

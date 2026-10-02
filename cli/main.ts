@@ -49,9 +49,12 @@ const COMMANDS: readonly CommandDef[] = [
     cmd: "node",
     sub: "list",
     description: "List all registered nodes",
-    usage: "opentax node list",
-    handler: async (_args) => {
-      await run(() => Promise.resolve(nodeListCommand()));
+    usage: "opentax node list [--json]",
+    options: [{ flag: "--json", description: "Output as JSON" }],
+    handler: async (args) => {
+      await run(() =>
+        Promise.resolve(nodeListCommand({ json: args.json === true }))
+      );
     },
   },
   {
